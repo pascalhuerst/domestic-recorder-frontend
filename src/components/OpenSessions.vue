@@ -1,59 +1,67 @@
 <template>
   <section class="section">
     <div class="sessions">
-      <div
-        class="recorder"
-        v-for="(recorder, key) in sessionsList"
-        :key="recorder"
-      >
-        
-        <h2 class="subtitle is-2"> {{ key }} </h2>
-        
-        <div
-        class="block"
-        v-for="(session, index) in recorder.open_sessions"
-        :key="index"
-      >
-          <nav class="level">
-            <!-- Left side -->
-            <div class="level-left">
-              <div class="level-item">
-                <h3 class="subtitle is-3">Session #{{ index }}</h3>
-              </div>
-              <div class="level-item">
-                <div class="tags has-addons">
-                  <span class="tag">Lifetime</span>
-                  <span class="tag is-primary">{{ formatHourToLive(session.hours_to_live)}} Hours</span>
-                </div>              
-              </div>
-              <div class="level-item">
-                <div class="tags has-addons">
-                  <span class="tag">Created</span>
-                  <span class="tag is-primary">{{ new Date(session.timestamp).toLocaleString() }}</span>
-                </div>    
-              </div>
-              <div class="level-item">
-                <span class="tag is-danger">
-                   Delete Session 
-                  <button class="delete is-small" @click="deleteSession(key, session.id)"></button>
-                </span>
-              </div>
-            </div>
+      
+      
+      
+      <div class="tabs  is-boxed">
+        <ul v-for="(recorder, key) in sessionsList"
+        :key="key">
+          <li :class="selectedRecorderID === key ? 'is-active' : ''" ><a @click="selectedRecorderID=key"> {{ key }} </a></li>
+        </ul>
+      </div>        
+      
+      
 
-            <!-- Right side -->
-            <div class="level-right">
-            </div>
-          </nav>
+      <div v-if="selectedRecorderID !== undefined">
+        <section class="hero" v-for="(session, index) in sessionsList[selectedRecorderID].open_sessions" :key="index">
+          <div class="hero-body">
+            <h1 class="title">Session #{{ index }}</h1>
 
-          <a v-bind:href="serverURL + 'detail/' + key + '/' + session.id">
-            <img
-              class="waveform"
-              :src="backendServerURL +  key + '/' + session.id + '/' + 'overview.png'"
-            />
-          </a>
-          <div class="vspace">
+            <nav class="level">
+              <!-- Left side -->
+              <div class="level-left">
+              
+                <div class="level-item">
+                  <div class="tags has-addons">
+                    <span class="tag">Lifetime</span>
+                    <span class="tag is-primary">{{ formatHourToLive(session.hours_to_live)}} Hours</span>
+                  </div>              
+                </div>
+                <div class="level-item">
+                  <div class="tags has-addons">
+                    <span class="tag">Created</span>
+                    <span class="tag is-primary">{{ new Date(session.timestamp).toLocaleString() }}</span>
+                  </div>    
+                </div>
+              </div>
+
+              <!-- Right side -->
+              <div class="level-right">
+                <div class="level-item">
+                  <span class="tag is-danger">
+                      Delete Session 
+                    <button class="delete is-small" @click="deleteSession(selectedRecorderID, session.id)"></button>
+                  </span>
+                </div>
+                <a :href="backendServerURL +  selectedRecorderID + '/' + session.id + '/' + 'data.wav'">
+                  <div class="level-item">
+                    <span class="tag is-primary" >
+                      <i class="fas fa-download"></i>
+                    </span>
+                  </div>
+                </a>
+              </div>
+            </nav>
+
+            <a v-bind:href="serverURL + 'detail/' + selectedRecorderID + '/' + session.id">
+              <img
+                class="waveform"
+                :src="backendServerURL +  selectedRecorderID + '/' + session.id + '/' + 'overview.png'"
+              />
+            </a>
           </div>
-      </div>
+        </section>
       </div>
     </div>
   </section>
@@ -72,6 +80,7 @@ export default {
       sessionsList: {},
       selectedAudioFileURL: '',
       selectedArrayBufferURL: '',
+      selectedRecorderID: undefined,
     };
   },
   created() {
@@ -84,7 +93,11 @@ export default {
         .then((response) => response.json())
         .then((data) => {
           this.sessionsList = data;
-          console.log(JSON.stringify(this.sessionsList));
+
+          for (let key in this.sessionsList) {
+            this.selectedRecorderID = key;
+            break;
+          }
         });
     },
     formatHourToLive(hours) {
@@ -113,7 +126,8 @@ export default {
 
 
 <style scoped>
-.vspace {
-  padding-top: 50px;
+.waveform {
+  height: 100px;
+  width: 1000px;
 }
 </style>

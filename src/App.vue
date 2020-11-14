@@ -14,7 +14,8 @@ export default {
 
 <style>
   #app {
-    padding-left: 100px;
-    padding-right: 100px;
+    
+    padding-left: 25%;
+    padding-right: 25%;
   }
 </style>
