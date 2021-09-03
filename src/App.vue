@@ -6,7 +6,7 @@
 
 <script>
 export default {
-  name: 'App',
+  name: 'Domestic Recorder',
   components: {
   }
 }
@@ -14,8 +14,9 @@ export default {
 
 <style>
   #app {
+
+    padding-left: 5%;
+    padding-right: 5%;
     
-    padding-left: 25%;
-    padding-right: 25%;
   }
 </style>
